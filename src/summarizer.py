@@ -19,9 +19,8 @@ def max_count_pairs(sentences, sentences_aspects, embeddings_asp, props_aspects)
                 if sim > max_j:
                     max_j = sim
             df.loc[i, 'sim'] = max_j/aspects_len
-
-    print(df.sort_values(by='sim', ascending=False))
-    print(" ".join(df.sort_values(by='sim', ascending=False).head()['sentence'].to_list()))
+    
+    return " ".join(df.sort_values(by='sim', ascending=False).head()['sentence'].to_list())
 
 def properties_aspects(properties: list, prop_embs, aspects, embeddings):
 
@@ -51,11 +50,10 @@ def summarize(movie: int, properties: list):
 
     prop_embs = emb.sentences_embeddings(properties)
 
-
-    props_aspects = properties_aspects(properties, prop_embs, aspects, embeddings_asp)
-
     sentences = utils.get_sentences(movie)
 
     sentences_aspects = utils.get_sentences_aspects(movie, sentences)
 
-    max_count_pairs(sentences, sentences_aspects, embeddings_asp, props_aspects)
+    props_aspects = properties_aspects(properties, prop_embs, aspects, embeddings_asp)
+
+    return max_count_pairs(sentences, sentences_aspects, embeddings_asp, props_aspects)
