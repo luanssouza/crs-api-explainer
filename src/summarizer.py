@@ -1,3 +1,6 @@
+from werkzeug.exceptions import NotFound
+from os import path
+
 import pandas as pd
 import numpy as np
 import os
@@ -38,6 +41,9 @@ def properties_aspects(properties: list, prop_embs, aspects, embeddings):
 def summarize(movie: int, properties: list):
 
     movie_dir = "{0}/{1}".format(os.environ.get('MOVIES_EMB'), movie)
+
+    if not path.exists(movie_dir) or not movie:
+        raise NotFound("Movie Not Found.")
         
     aspects_df = pd.read_csv(movie_dir + '/aspects.csv')
 
