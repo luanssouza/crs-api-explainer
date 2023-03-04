@@ -1,12 +1,8 @@
-from werkzeug.exceptions import NotFound
-from os import path
-
 import pandas as pd
-import numpy as np
-import os
 
 import src.inference as inference
 import src.utils as utils
+import src.bucket as bc
 
 def max_count_pairs(sentences, sentences_aspects, embeddings_asp, props_aspects):
     # max-count-pairs method to select sentences
@@ -40,14 +36,14 @@ def properties_aspects(properties: list, prop_embs, aspects, embeddings):
 
 def summarize(movie: int, properties: list):
 
-    movie_dir = "{0}/{1}".format(os.environ.get('MOVIES_EMB'), movie)
+    movie_dir = "data/{0}".format(movie)
 
-    if not path.exists(movie_dir) or not movie:
-        raise NotFound("Movie Not Found.")
+    #if not path.exists(movie_dir) or not movie:
+    #    raise NotFound("Movie Not Found.")
         
-    aspects_df = pd.read_csv(movie_dir + '/aspects.csv')
+    aspects_df = bc.read_csv(movie_dir + '/aspects.csv')
 
-    embeddings_asp = pd.read_csv(movie_dir + '/embeddings.csv')
+    embeddings_asp = bc.read_csv(movie_dir + '/embeddings.csv')
 
     aspects = aspects_df['aspect'].to_list()
 
