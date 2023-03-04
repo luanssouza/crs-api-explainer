@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import os
 
-import src.embeddings as emb
+import src.inference as inference
 import src.utils as utils
 
 def max_count_pairs(sentences, sentences_aspects, embeddings_asp, props_aspects):
@@ -14,11 +14,11 @@ def max_count_pairs(sentences, sentences_aspects, embeddings_asp, props_aspects)
     df['sim'] = 0.0
     aspects_len = len(props_aspects)
     for i, row in df.iterrows():
-        aspects_emb = emb.sentences_embeddings(sentences_aspects[i])
+        aspects_emb = inference.sentences_embeddings(sentences_aspects[i])
         for j in props_aspects[0]:
             max_j = 0
             for asp_emb in aspects_emb:
-                sim = utils.cosine_similarity(asp_emb, embeddings_asp['embedding'][j])
+                sim = utils.cosine_similarity(asp_emb, embeddings_asp.iloc[j])
                 if sim > max_j:
                     max_j = sim
             df.loc[i, 'sim'] = max_j/aspects_len
@@ -31,7 +31,7 @@ def properties_aspects(properties: list, prop_embs, aspects, embeddings):
     for i in range(0, len(prop_embs)):
         sim = []
         for j in range(0, len(embeddings)):
-            sim.append(utils.cosine_similarity(prop_embs[i], embeddings['embedding'][j]))
+            sim.append(utils.cosine_similarity(prop_embs[i], embeddings.iloc[j]))
         df = pd.DataFrame(aspects, columns=['aspects'])
         df['sim'] = sim
         props_aspects.append(df.sort_values(by='sim', ascending=False).head().index.tolist())
@@ -47,14 +47,11 @@ def summarize(movie: int, properties: list):
         
     aspects_df = pd.read_csv(movie_dir + '/aspects.csv')
 
-    embeddings_asp = pd.read_csv(movie_dir + '/embeddings_aspects.csv')
-
-    for i, row in embeddings_asp.iterrows():
-        embeddings_asp['embedding'][i] = np.fromstring(row['embedding'][1:-1], sep=', ')
+    embeddings_asp = pd.read_csv(movie_dir + '/embeddings.csv')
 
     aspects = aspects_df['aspect'].to_list()
 
-    prop_embs = emb.sentences_embeddings(properties)
+    prop_embs = inference.sentences_embeddings(properties)
 
     sentences = utils.get_sentences(movie)
 
