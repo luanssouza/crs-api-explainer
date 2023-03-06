@@ -1,4 +1,6 @@
 
+import os
+
 from werkzeug.exceptions import HTTPException
 from flask import Flask, request
 import logging
@@ -23,4 +25,4 @@ def handle_exception(e):
     return { "message" : "Internal Server Error!", "status": 500 }, 500
 
 if __name__ == "__main__":
-    app.run(port=9090)
+    app.run(host='0.0.0.0', port=os.environ.get('PORT', '9090'))
